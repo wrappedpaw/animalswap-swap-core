@@ -3,7 +3,7 @@ import { solidity, MockProvider, createFixtureLoader } from 'ethereum-waffle'
 import { Contract, BigNumber, constants } from 'ethers'
 import { getCreate2Address } from './shared/utilities'
 import { factoryFixture } from './shared/fixtures'
-import ApePair from '../build/ApePair.json'
+import AnimalPair from '../build/AnimalPair.json'
 
 const {  AddressZero } = constants;
 
@@ -14,7 +14,7 @@ const TEST_ADDRESSES: [string, string] = [
   '0x2000000000000000000000000000000000000000'
 ]
 
-describe('ApeFactory', () => {
+describe('AnimalFactory', () => {
   const provider = new MockProvider(
     { 
       ganacheOptions: {
@@ -39,20 +39,20 @@ describe('ApeFactory', () => {
   })
 
   async function createPair(tokens: [string, string]) {
-    const bytecode = `0x${ApePair.bytecode}`
+    const bytecode = `0x${AnimalPair.bytecode}`
     const create2Address = getCreate2Address(factory.address, tokens, bytecode)
     await expect(factory.createPair(...tokens))
       .to.emit(factory, 'PairCreated')
       .withArgs(TEST_ADDRESSES[0], TEST_ADDRESSES[1], create2Address, BigNumber.from(1))
 
-    await expect(factory.createPair(...tokens)).to.be.reverted // ApeSwap: PAIR_EXISTS
-    await expect(factory.createPair(...tokens.slice().reverse())).to.be.reverted // ApeSwap: PAIR_EXISTS
+    await expect(factory.createPair(...tokens)).to.be.reverted // AnimalSwap: PAIR_EXISTS
+    await expect(factory.createPair(...tokens.slice().reverse())).to.be.reverted // AnimalSwap: PAIR_EXISTS
     expect(await factory.getPair(...tokens)).to.eq(create2Address)
     expect(await factory.getPair(...tokens.slice().reverse())).to.eq(create2Address)
     expect(await factory.allPairs(0)).to.eq(create2Address)
     expect(await factory.allPairsLength()).to.eq(1)
 
-    const pair = new Contract(create2Address, JSON.stringify(ApePair.abi), provider as any)
+    const pair = new Contract(create2Address, JSON.stringify(AnimalPair.abi), provider as any)
     expect(await pair.factory()).to.eq(factory.address)
     expect(await pair.token0()).to.eq(TEST_ADDRESSES[0])
     expect(await pair.token1()).to.eq(TEST_ADDRESSES[1])
@@ -73,15 +73,15 @@ describe('ApeFactory', () => {
   })
 
   it('setFeeTo', async () => {
-    await expect(factory.connect(other).setFeeTo(other.address)).to.be.revertedWith('ApeSwap: FORBIDDEN')
+    await expect(factory.connect(other).setFeeTo(other.address)).to.be.revertedWith('AnimalSwap: FORBIDDEN')
     await factory.setFeeTo(wallet.address)
     expect(await factory.feeTo()).to.eq(wallet.address)
   })
 
   it('setFeeToSetter', async () => {
-    await expect(factory.connect(other).setFeeToSetter(other.address)).to.be.revertedWith('ApeSwap: FORBIDDEN')
+    await expect(factory.connect(other).setFeeToSetter(other.address)).to.be.revertedWith('AnimalSwap: FORBIDDEN')
     await factory.setFeeToSetter(other.address)
     expect(await factory.feeToSetter()).to.eq(other.address)
-    await expect(factory.setFeeToSetter(wallet.address)).to.be.revertedWith('ApeSwap: FORBIDDEN')
+    await expect(factory.setFeeToSetter(wallet.address)).to.be.revertedWith('AnimalSwap: FORBIDDEN')
   })
 })

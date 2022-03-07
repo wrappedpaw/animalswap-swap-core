@@ -14,7 +14,7 @@ chai.use(solidity)
 const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
-describe('ApeERC20', () => {
+describe('AnimalERC20', () => {
   const provider = new MockProvider(
     { 
       ganacheOptions: {
@@ -32,7 +32,7 @@ describe('ApeERC20', () => {
 
   it('name, symbol, decimals, totalSupply, balanceOf, DOMAIN_SEPARATOR, PERMIT_TYPEHASH', async () => {
     const name = await token.name()
-    expect(name).to.eq('ApeSwapFinance LPs')
+    expect(name).to.eq('AnimalSwapFinance LPs')
     expect(await token.symbol()).to.eq('APE-LP')
     expect(await token.decimals()).to.eq(18)
     expect(await token.totalSupply()).to.eq(TOTAL_SUPPLY)
